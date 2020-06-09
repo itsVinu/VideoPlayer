@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name='AllImages_from_MediaStoreImage_table'
