@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -31,8 +32,53 @@ class MainActivity : AppCompatActivity() {
         list = mutableListOf()
         p()
 
-        loadImages()
+//        loadImages()
+        loadVideos()
+        val adapters = RVAdaptor(this@MainActivity, list!!)
+        rv.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
+            adapter = adapters
+        }
+        adapters.onItemClick = {
+            val i = Intent(this,VideoPlayerActivity::class.java)
+            i.putExtra("uri",it.uri.toString())
+            i.putExtra("name",it.name.toString())
+        }
 
+
+    }
+
+    private fun loadVideos() {
+        applicationContext.contentResolver.query(
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+            arrayOf(
+                MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.DISPLAY_NAME,
+                MediaStore.Video.Media.SIZE
+            ),
+            null,
+            null,
+            "${MediaStore.Video.Media.DISPLAY_NAME} ASC"
+        ).use {
+            var id = it!!.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
+            var name = it.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
+            var size = it.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
+            while (it.moveToNext()) {
+
+                var idd = it.getLong(id)
+                var names = it.getString(name)
+                var sizes = it.getInt(size) / 1024
+
+                var uri =
+                    ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, idd)
+
+                list!!.add(Images(uri, names, sizes))
+            }
+        }
+//        rv.setHasFixedSize(true)
+//        rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+//        rv.adapter = RVAdaptor(this, list!!)
     }
 
 

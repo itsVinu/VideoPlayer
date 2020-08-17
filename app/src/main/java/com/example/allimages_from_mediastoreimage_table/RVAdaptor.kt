@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import org.w3c.dom.Text
+import com.bumptech.glide.Glide
 
-class RVAdaptor(var c: Context,var list:MutableList<Images>) : RecyclerView.Adapter<RVAdaptor.VH>() {
+class RVAdaptor(var c: Context,var list:MutableList<Images>) : RecyclerView.Adapter<RVAdaptor.ItemViewHolder>() {
 
-    inner class VH(v: View) : RecyclerView.ViewHolder(v) {
+    var onItemClick: ((user: Images ) -> Unit)? = null
+
+    inner class ItemViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         var iv: ImageView? = null
         var tv_name: TextView? = null
         var tv_size: TextView? = null
@@ -22,11 +24,21 @@ class RVAdaptor(var c: Context,var list:MutableList<Images>) : RecyclerView.Adap
             tv_size = v.findViewById(R.id.tv_size)
         }
 
+        fun bind(user: Images) {
+            itemView.apply{
+                // TODO: Bind the data with View
+                setOnClickListener {
+                    // TODO: Handle on click
+                    onItemClick?.invoke(user)
+                }
+            }
+        }
+
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         LayoutInflater.from(parent.context).inflate(R.layout.cardview1, parent, false).let {
-            return VH(it)
+            return ItemViewHolder(it)
         }
     }
 
@@ -36,12 +48,16 @@ class RVAdaptor(var c: Context,var list:MutableList<Images>) : RecyclerView.Adap
 
     }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         list.get(position).let {
             holder.run {
-                iv!!.setImageURI(it.uri)
+//                iv!!.setImageURI(it.uri)
                 tv_name!!.text = it.name
                 tv_size!!.text = it.size.toString()
+
+                Glide.with(c)
+                    .load(it.uri)
+                    .into(iv!!)
             }
         }
     }
