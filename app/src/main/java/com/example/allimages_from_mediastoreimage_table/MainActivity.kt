@@ -20,7 +20,9 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
-    var list: MutableList<Images>? = null
+//    var list: MutableList<Images>? = null
+    var list = arrayListOf<Images>()
+    val adapters = RVAdaptor(list)
     var granted = false
 
     @SuppressLint("InlinedApi")
@@ -29,21 +31,23 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-        list = mutableListOf()
+//        list = mutableListOf()
         p()
 
 //        loadImages()
         loadVideos()
-        val adapters = RVAdaptor(this@MainActivity, list!!)
+//        val adapters = RVAdaptor(this@MainActivity, list!!)
         rv.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
-            adapter = adapters
+            adapter = this@MainActivity.adapters
         }
         adapters.onItemClick = {
             val i = Intent(this,VideoPlayerActivity::class.java)
             i.putExtra("uri",it.uri.toString())
             i.putExtra("name",it.name.toString())
+
+            startActivity(i)
         }
 
 
@@ -110,9 +114,9 @@ class MainActivity : AppCompatActivity() {
                 list!!.add(Images(uri, names, sizes))
             }
         }
-        rv.setHasFixedSize(true)
-        rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        rv.adapter = RVAdaptor(this, list!!)
+//        rv.setHasFixedSize(true)
+//        rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+//        rv.adapter = RVAdaptor(this, list!!)
     }
 
 

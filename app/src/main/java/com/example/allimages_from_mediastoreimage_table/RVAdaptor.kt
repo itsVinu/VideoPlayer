@@ -8,25 +8,23 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.ads.interactivemedia.v3.internal.it
+import kotlinx.android.synthetic.main.cardview1.view.*
 
-class RVAdaptor(var c: Context,var list:MutableList<Images>) : RecyclerView.Adapter<RVAdaptor.ItemViewHolder>() {
+class RVAdaptor(var list:List<Images>) : RecyclerView.Adapter<RVAdaptor.ItemViewHolder>() {
 
     var onItemClick: ((user: Images ) -> Unit)? = null
 
     inner class ItemViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        var iv: ImageView? = null
-        var tv_name: TextView? = null
-        var tv_size: TextView? = null
-
-        init {
-            iv = v.findViewById(R.id.iv)
-            tv_name = v.findViewById(R.id.tv_name)
-            tv_size = v.findViewById(R.id.tv_size)
-        }
-
         fun bind(user: Images) {
             itemView.apply{
                 // TODO: Bind the data with View
+                tv_name!!.text = user.name
+                tv_size!!.text = user.size.toString()
+
+                Glide.with(this)
+                    .load(user.uri)
+                    .into(iv!!)
                 setOnClickListener {
                     // TODO: Handle on click
                     onItemClick?.invoke(user)
@@ -43,23 +41,11 @@ class RVAdaptor(var c: Context,var list:MutableList<Images>) : RecyclerView.Adap
     }
 
     override fun getItemCount(): Int {
-
         return list.size
-
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        list.get(position).let {
-            holder.run {
-//                iv!!.setImageURI(it.uri)
-                tv_name!!.text = it.name
-                tv_size!!.text = it.size.toString()
-
-                Glide.with(c)
-                    .load(it.uri)
-                    .into(iv!!)
-            }
-        }
+        holder.bind(list[position])
     }
 
 }
